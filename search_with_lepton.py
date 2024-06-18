@@ -20,6 +20,7 @@ from leptonai.photon import Photon, StaticFiles
 from leptonai.photon.types import to_bool
 from leptonai.api.workspace import WorkspaceInfoLocalRecord
 from leptonai.util import tool
+from security import safe_requests
 
 ################################################################################
 # Constant values for the RAG model.
@@ -99,8 +100,7 @@ def search_with_bing(query: str, subscription_key: str):
     Search with bing and return the contexts.
     """
     params = {"q": query, "mkt": BING_MKT}
-    response = requests.get(
-        BING_SEARCH_V7_ENDPOINT,
+    response = safe_requests.get(BING_SEARCH_V7_ENDPOINT,
         headers={"Ocp-Apim-Subscription-Key": subscription_key},
         params=params,
         timeout=DEFAULT_SEARCH_ENGINE_TIMEOUT,
@@ -127,8 +127,7 @@ def search_with_google(query: str, subscription_key: str, cx: str):
         "q": query,
         "num": REFERENCE_COUNT,
     }
-    response = requests.get(
-        GOOGLE_SEARCH_ENDPOINT, params=params, timeout=DEFAULT_SEARCH_ENGINE_TIMEOUT
+    response = safe_requests.get(GOOGLE_SEARCH_ENDPOINT, params=params, timeout=DEFAULT_SEARCH_ENGINE_TIMEOUT
     )
     if not response.ok:
         logger.error(f"{response.status_code} {response.text}")
@@ -215,8 +214,7 @@ def search_with_searchapi(query: str, subscription_key: str):
     logger.info(
         f"{payload} {headers} {subscription_key} {query} {SEARCHAPI_SEARCH_ENDPOINT}"
     )
-    response = requests.get(
-        SEARCHAPI_SEARCH_ENDPOINT,
+    response = safe_requests.get(SEARCHAPI_SEARCH_ENDPOINT,
         headers=headers,
         params=payload,
         timeout=30,
